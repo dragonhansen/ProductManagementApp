@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ProductContainer from "./ProductContainer";
 
 function ShowProducts() {
 
@@ -31,7 +32,11 @@ function ShowProducts() {
     return(
         <main>
             <h1>This page shows products</h1>
-            {(products != null) ? products.map(product => (product != null) ? <h3>{product.productName}</h3> : <></>) : <div>Loading...</div>}
+            {(products != null) ? products.map(product => 
+                (product != null) ? 
+                <ProductContainer id={product.productId} name={product.productName} description={product.productDescription}></ProductContainer>
+                : <></>) 
+            : <div>Loading...</div>}
             {(pageNumber > 0) ? <button onClick={decrease}>Previous Page</button> : <></>}
             {(hasMorePages) ? <button onClick={increase}>Next Page</button> : <></>}
         </main>
