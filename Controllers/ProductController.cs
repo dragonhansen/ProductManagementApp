@@ -8,22 +8,25 @@ namespace ProductManagementApp.Controllers;
 [Route("[controller]")]
 public class ProductController : ControllerBase
 {
-    [HttpGet("{pageNumber:int}")]
-    public JsonResult Get(int pageNumber)
+   Dictionary<int, string> SortingMap = new Dictionary<int, string>(){{0, "ProductPrice"}, {1, "ProductName"}, {2, "ProductID"}};
+
+    [HttpGet("{sorting:int}/{pageNumber:int}")]
+    public JsonResult Get(int pageNumber, int sorting)
     {
         SqliteConnection connection =  new SqliteConnection("Data Source=product_db.db");
         connection.Open();
-        return ReadData(connection, pageNumber);
+        return ReadData(connection, pageNumber, sorting);
     }
 
-    private JsonResult ReadData(SqliteConnection conn, int pageNumber)
+    private JsonResult ReadData(SqliteConnection conn, int pageNumber, int sorting)
       {
-         int start = pageNumber*10 + 1;
-         int end = start+10;
+         int start = pageNumber*10 ;
          SqliteDataReader sqliteDataReader;
          SqliteCommand sqliteCmd;
          sqliteCmd = conn.CreateCommand();
-         sqliteCmd.CommandText = $"SELECT * FROM Item WHERE ProductID BETWEEN {start} AND {end}";
+         string order;
+         SortingMap.TryGetValue(sorting, out order);
+         sqliteCmd.CommandText = $"SELECT * FROM Item ORDER BY {order} LIMIT 11 OFFSET {start}";
 
          sqliteDataReader = sqliteCmd.ExecuteReader();
          ProductModel[] products = new ProductModel[10];
