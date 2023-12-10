@@ -8,35 +8,37 @@ namespace ProductManagementApp.Controllers;
 [Route("[controller]")]
 public class ProductController : ControllerBase
 {
-    [HttpGet]
-    public ProductModel[] Get()
+    [HttpGet("{pageNumber:int}")]
+    public JsonResult Get(int pageNumber)
     {
         SqliteConnection connection =  new SqliteConnection("Data Source=product_db.db");
         connection.Open();
-        return ReadData(connection);
+        return ReadData(connection, pageNumber);
     }
 
-    private ProductModel[] ReadData(SqliteConnection conn)
+    private JsonResult ReadData(SqliteConnection conn, int pageNumber)
       {
+         int start = pageNumber*10 + 1;
+         int end = start+10;
          SqliteDataReader sqliteDataReader;
          SqliteCommand sqliteCmd;
          sqliteCmd = conn.CreateCommand();
-         sqliteCmd.CommandText = "SELECT * FROM Item";
+         sqliteCmd.CommandText = $"SELECT * FROM Item WHERE ProductID BETWEEN {start} AND {end}";
 
          sqliteDataReader = sqliteCmd.ExecuteReader();
-         ProductModel[] products = new ProductModel[35];
+         ProductModel[] products = new ProductModel[10];
          int i = 0;
-         while (sqliteDataReader.Read())
+         while (i < 10 && sqliteDataReader.Read())
          {
             int productID = sqliteDataReader.GetInt32(0);
             string productName = sqliteDataReader.GetString(1);
             string productDescription = sqliteDataReader.GetString(2);
-            Console.WriteLine(productName);
             ProductModel item = new ProductModel{ProductId=productID, ProductName=productName, ProductDescription=productDescription};
             products[i] = item;
             i++;
          }
+         bool hasMoreProductsToRead = sqliteDataReader.Read();
          conn.Close();
-         return products;
+         return new JsonResult(new {products=products, hasMoreProductsToRead=hasMoreProductsToRead});
       }
 }
