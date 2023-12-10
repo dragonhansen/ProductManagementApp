@@ -34,7 +34,7 @@ function ShowProducts() {
             <h1>This page shows products</h1>
             {(products != null) ? products.map(product => 
                 (product != null) ? 
-                <ProductContainer id={product.productId} name={product.productName} description={product.productDescription}></ProductContainer>
+                <ProductContainer id={product.productId} name={product.productName} description={product.productDescription} price={product.productPrice}></ProductContainer>
                 : <></>) 
             : <div>Loading...</div>}
             {(pageNumber > 0) ? <button onClick={decrease}>Previous Page</button> : <></>}

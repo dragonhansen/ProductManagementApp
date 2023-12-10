@@ -33,12 +33,13 @@ public class ProductController : ControllerBase
             int productID = sqliteDataReader.GetInt32(0);
             string productName = sqliteDataReader.GetString(1);
             string productDescription = sqliteDataReader.GetString(2);
-            ProductModel item = new ProductModel{ProductId=productID, ProductName=productName, ProductDescription=productDescription};
+            int productPrice = sqliteDataReader.GetInt32(3);
+            ProductModel item = new ProductModel{ProductId=productID, ProductName=productName, ProductDescription=productDescription, ProductPrice=productPrice};
             products[i] = item;
             i++;
          }
          bool hasMoreProductsToRead = sqliteDataReader.Read();
          conn.Close();
-         return new JsonResult(new {products=products, hasMoreProductsToRead=hasMoreProductsToRead});
+         return new JsonResult(new { products, hasMoreProductsToRead });
       }
 }
