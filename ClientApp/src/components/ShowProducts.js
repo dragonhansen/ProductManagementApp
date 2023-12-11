@@ -57,7 +57,7 @@ function ShowProducts() {
                 <h4>Max : </h4>
                 <input onChange={handleFilterChange(setFilterMaxValue)}/>
             </form>
-            {(filter === "ProductPrice") ? <button onClick={() => setFilter("ProductID")}>Filter by id</button> : <button onClick={() => setFilter("ProductPrice")}>Filter by id</button>}
+            {(filter === "ProductPrice") ? <button onClick={() => setFilter("ProductID")}>Filter by id</button> : <button onClick={() => setFilter("ProductPrice")}>Filter by price</button>}
         </>
     );
 }
