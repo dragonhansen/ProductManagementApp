@@ -13,6 +13,7 @@ function ShowProducts() {
     const [filterMaxValue, setFilterMaxValue] = useState(-1);
 
     const handleFilterChange = (setFunction) => (event) => {
+        setPageNumber(0);
         if (event.target.value === "") {
             setFunction(-1);
             return;
