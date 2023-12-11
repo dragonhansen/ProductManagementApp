@@ -30,12 +30,9 @@ function AddAndEditProduct() {
     }
 
     const handleInputChange = (event) => {
-        const { target } = event;
-        const { name, value } = target;
-    
         setFormData({
           ...formData,
-          [name]: value
+          [event.target.name]: event.target.value
         });
       }
 
@@ -51,8 +48,10 @@ function AddAndEditProduct() {
                 <input name="productDescription" onChange={handleInputChange} required/>
                 <h4>Product price: </h4>
                 <input name="productPrice" onChange={handleInputChange} required/>
-                <button type="submit" onClick={() => setSubmitType("add-product")}>Add product</button>
-                <button type="submit" onClick={() => setSubmitType("edit-product")}>Edit product</button>
+                <div>
+                    <button type="submit" onClick={() => setSubmitType("add-product")}>Add product</button>
+                    <button type="submit" onClick={() => setSubmitType("edit-product")}>Edit product</button>
+                </div>
             </form> 
             {(!submitSuccessful && submitTpye=== "add-product") ? <div>Error: make sure to use a unique ID and correct data types for parameters!</div> : <></>}
             {(!submitSuccessful && submitTpye === "edit-product") ? <div>Error: make sure to use an existing ID and correct data types for parameters!</div> : <></>}
