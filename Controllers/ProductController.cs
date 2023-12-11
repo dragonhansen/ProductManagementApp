@@ -24,9 +24,9 @@ public class ProductController : ControllerBase
       int start = pageNumber * 10;
       SqliteDataReader sqliteDataReader;
       SqliteCommand sqliteCmd = conn.CreateCommand();
-      string order;
-      SortingMap.TryGetValue(sorting, out order);
-      sqliteCmd.CommandText = $"SELECT * FROM Item ORDER BY {order} LIMIT 11 OFFSET {start}";
+      string sortingOrder;
+      SortingMap.TryGetValue(sorting, out sortingOrder);
+      sqliteCmd.CommandText = $"SELECT * FROM Product ORDER BY {sortingOrder} LIMIT 11 OFFSET {start}";
 
       sqliteDataReader = sqliteCmd.ExecuteReader();
       ProductModel[] products = new ProductModel[10];
@@ -37,8 +37,8 @@ public class ProductController : ControllerBase
          string productName = sqliteDataReader.GetString(1);
          string productDescription = sqliteDataReader.GetString(2);
          int productPrice = sqliteDataReader.GetInt32(3);
-         ProductModel item = new ProductModel { ProductId = productID, ProductName = productName, ProductDescription = productDescription, ProductPrice = productPrice };
-         products[i] = item;
+         ProductModel product = new ProductModel { ProductId = productID, ProductName = productName, ProductDescription = productDescription, ProductPrice = productPrice };
+         products[i] = product;
          i++;
       }
       bool hasMoreProductsToRead = sqliteDataReader.Read();
@@ -50,14 +50,17 @@ public class ProductController : ControllerBase
    public IActionResult ProcessFormData([FromBody] ProductModel productToAdd) {
       connection.Open();
       SqliteCommand sqliteCmd = connection.CreateCommand();
-      sqliteCmd.CommandText = $"INSERT INTO Item VALUES ({productToAdd.ProductId}, '{productToAdd.ProductName}', '{productToAdd.ProductDescription}', {productToAdd.ProductPrice})";
+      sqliteCmd.CommandText = $"INSERT INTO Product VALUES ({productToAdd.ProductId}, '{productToAdd.ProductName}', '{productToAdd.ProductDescription}', {productToAdd.ProductPrice})";
       try {
          sqliteCmd.ExecuteNonQuery();
+         return Ok();
       }
       catch(SqliteException e) {
          Console.WriteLine($"Error: could not insert product due to {e.Message}, arborting...");
          return Conflict();
       }
-      return Ok();
+      finally {
+         connection.Close();
+      }
    }
 }

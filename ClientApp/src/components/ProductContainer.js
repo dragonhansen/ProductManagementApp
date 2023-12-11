@@ -1,14 +1,19 @@
-import React from "react";
+import React, { Component } from "react";
 
-function ProductContainer({id, name, description, price}) {
-    return (
-        <>
-            <h3>{name}</h3>
-            <h4>ProductId: {id}</h4>
-            <h4>Description: {description}</h4>
-            <h4>Price: {price}</h4>
-        </>
-    );
+class ProductContainer extends Component {
+    render() {
+        if(this.props.name == null) {
+            return <></>;
+        }
+        return (
+            <>
+                <h3>{this.props.name}</h3>
+                <h4>ProductId: {this.props.id}</h4>
+                <h4>Description: {this.props.description}</h4>
+                <h4>Price: {this.props.price}</h4>
+            </>
+        );
+    }
 }
 
 export default ProductContainer;

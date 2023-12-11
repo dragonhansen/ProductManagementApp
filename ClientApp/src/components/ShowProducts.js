@@ -13,39 +13,35 @@ function ShowProducts() {
     const [pageNumber, setPageNumber] = useState(0);
     const [hasMorePages, setHasMorePages] = useState(false);
     const [sorting, setSorting] = useState(Sorting.Id);
+    const [fetchDataError, setFetchDataError] = useState(false);
 
     useEffect(() => {
         fetch(`product/${sorting}/${pageNumber}`)
-            .then((results) => {
-                return results.json();
+            .then((result) => {
+                return result.json();
             })
             .then(data => {
                 setProducts(data.products);
                 setHasMorePages(data.hasMoreProductsToRead);
+                setFetchDataError(false);
             })
             .catch(error => {
-                console.log(error);
+                setFetchDataError(true);
+                console.error('Error: ', error);
             })
     }, [pageNumber, sorting])
-
-    const increase = () => {
-        setPageNumber(pageNumber => pageNumber + 1);
-      };
-
-    const decrease = () => {
-        setPageNumber(pageNumber => pageNumber - 1);
-      };
 
     return(
         <>
             <h1>This page shows products</h1>
-            {(products != null) ? products.map(product => 
+            {fetchDataError ? <div>An error occurred while retrieving data from server</div> : <></> }
+            {(products != null) ? products.map((product, index) => 
                 (product != null) ? 
-                <ProductContainer id={product.productId} name={product.productName} description={product.productDescription} price={product.productPrice}></ProductContainer>
-                : <></>) 
+                <ProductContainer key={index} id={product.productId} name={product.productName} description={product.productDescription} price={product.productPrice}></ProductContainer>
+                : <ProductContainer key={index}></ProductContainer>) 
             : <div>Loading...</div>}
-            {(pageNumber > 0) ? <button onClick={decrease}>Previous Page</button> : <></>}
-            {(hasMorePages) ? <button onClick={increase}>Next Page</button> : <></>}
+            {(pageNumber > 0) ? <button onClick={() => setPageNumber(pageNumber - 1)}>Previous Page</button> : <></>}
+            {(hasMorePages) ? <button onClick={() => setPageNumber(pageNumber + 1)}>Next Page</button> : <></>}
             <button onClick={() => setSorting(Sorting.Price)}>Price: 0-9</button>
             <button onClick={() => setSorting(Sorting.Alphabetically)}>Name: A-Z</button>
             <button onClick={() => setSorting(Sorting.Id)}>Id: 0-9</button>

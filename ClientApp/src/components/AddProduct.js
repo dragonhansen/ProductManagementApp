@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 function AddProduct() {
 
     const [formData, setFormData] = useState({});
     const [submitSuccessful, setSubmitSuccessful] = useState(true);
+    const formRef = useRef(null);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch('/product', {
+            const response = await fetch('product', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
@@ -16,11 +17,11 @@ function AddProduct() {
                 body: JSON.stringify(formData),
             });
             if (response.ok) {
-                document.getElementById('productForm').reset();
+                formRef.current.reset();
                 setSubmitSuccessful(true);
             } else {
                 setSubmitSuccessful(false);
-                console.error('Error, make sure to use a unique ID and correct data type for parameters', response.statusText);
+                console.error('Error', response.status, response.statusText);
             }
         } catch (error) {
             console.error('Error:', error.message);
@@ -32,14 +33,15 @@ function AddProduct() {
         const { name, value } = target;
     
         setFormData({
-          ...formData, // Keep existing form data
-          [name]: value // Update form data for the input field that changed
+          ...formData,
+          [name]: value
         });
       }
 
     return (
         <>
-            <form id="productForm" onSubmit={handleSubmit}>
+            <h1>On this page, you can add new products to the database</h1>
+            <form onSubmit={handleSubmit} ref={formRef}>
                 <h4>Product ID</h4>
                 <input name="productId" onChange={handleInputChange} required/>
                 <h4>Product name: </h4>
@@ -50,7 +52,7 @@ function AddProduct() {
                 <input name="productPrice" onChange={handleInputChange} required/>
                 <button type="submit">Add product</button>
             </form> 
-            {submitSuccessful ? <></> : <h4>Error, make sure to use a unique ID and correct data type for parameters!</h4>}
+            {submitSuccessful ? <></> : <div>Error: make sure to use a unique ID and correct data types for parameters!</div>}
         </>
     );
 }

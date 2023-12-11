@@ -1,13 +1,13 @@
-DROP TABLE IF EXISTS Item;
+DROP TABLE IF EXISTS Product;
 
-CREATE TABLE Item (
+CREATE TABLE Product (
     ProductID INTEGER PRIMARY KEY,
     ProductName TEXT,
     ProductDescription TEXT,
     ProductPrice INTEGER
 );
 
-INSERT INTO Item (ProductID, ProductName, ProductDescription, ProductPrice) VALUES
+INSERT INTO Product (ProductID, ProductName, ProductDescription, ProductPrice) VALUES
     (1, 'Laptop Pro X1', 'A powerful and sleek laptop designed for professionals. Features include a high-resolution display, fast processor, and all-day battery life', 435),
     (2, 'SmartHome Hub v2', 'The ultimate smart home automation hub. Connect and control your lights, thermostat, and security cameras seamlessly with this advanced device', 865),
     (3, 'ZenMaster Meditation Pillow', 'Find your zen with the ZenMaster Meditation Pillow. Made from eco-friendly materials, it provides the perfect support for your mindfulness practice', 742),
