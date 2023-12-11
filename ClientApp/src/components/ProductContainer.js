@@ -8,7 +8,7 @@ class ProductContainer extends Component {
         return (
             <>
                 <h3>{this.props.name}</h3>
-                <h4>ProductId: {this.props.id}</h4>
+                <h4>Product ID: {this.props.id}</h4>
                 <h4>Description: {this.props.description}</h4>
                 <h4>Price: {this.props.price}</h4>
             </>

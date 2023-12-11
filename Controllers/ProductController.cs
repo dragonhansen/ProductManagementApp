@@ -10,22 +10,18 @@ public class ProductController : ControllerBase
 {
    SqliteConnection connection = new SqliteConnection("Data Source=product_db.db");
 
-   Dictionary<int, string> SortingMap = new Dictionary<int, string>() { { 0, "ProductPrice" }, { 1, "ProductName" }, { 2, "ProductID" } };
-
-   [HttpGet("{sorting:int}/{pageNumber:int}/{filter}/{min:int?}/{max:int?}")]
-   public JsonResult Get(int pageNumber, int sorting, string filter , int min, int max)
+   [HttpGet("{sortingOrder}/{pageNumber:int}/{filter}/{min:int}/{max:int}")]
+   public JsonResult Get(int pageNumber, string sortingOrder, string filter , int min, int max)
    {
       connection.Open();
-      return ReadData(connection, pageNumber, sorting, filter, min, max);
+      return ReadData(connection, pageNumber, sortingOrder, filter, min, max);
    }
 
-   private JsonResult ReadData(SqliteConnection conn, int pageNumber, int sorting, string filter, int min = -1, int max = -1)
+   private JsonResult ReadData(SqliteConnection conn, int pageNumber, string sortingOrder, string filter, int min = -1, int max = -1)
    {
       int start = pageNumber * 10;
       SqliteDataReader sqliteDataReader;
       SqliteCommand sqliteCmd = conn.CreateCommand();
-      string sortingOrder;
-      SortingMap.TryGetValue(sorting, out sortingOrder);
       
       sqliteCmd.CommandText = "SELECT * FROM Product ";
 
