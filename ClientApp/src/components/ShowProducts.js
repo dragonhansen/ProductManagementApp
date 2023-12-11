@@ -14,9 +14,11 @@ function ShowProducts() {
     const [hasMorePages, setHasMorePages] = useState(false);
     const [sorting, setSorting] = useState(Sorting.Id);
     const [fetchDataError, setFetchDataError] = useState(false);
-
+    const [filter, setFilter] = useState("ProductPrice");
+    const [filterMinValue, setFilterMinValue] = useState(-1);
+    const [filterMaxValue, setFilterMaxValue] = useState(-1);
     useEffect(() => {
-        fetch(`product/${sorting}/${pageNumber}`)
+        fetch(`product/${sorting}/${pageNumber}/${filter}/${filterMinValue}/${filterMaxValue}`)
             .then((result) => {
                 return result.json();
             })
@@ -29,7 +31,7 @@ function ShowProducts() {
                 setFetchDataError(true);
                 console.error('Error: ', error);
             })
-    }, [pageNumber, sorting])
+    }, [pageNumber, sorting, filter, filterMinValue, filterMaxValue])
 
     return(
         <>
@@ -45,6 +47,14 @@ function ShowProducts() {
             <button onClick={() => setSorting(Sorting.Price)}>Price: 0-9</button>
             <button onClick={() => setSorting(Sorting.Alphabetically)}>Name: A-Z</button>
             <button onClick={() => setSorting(Sorting.Id)}>Id: 0-9</button>
+            <form>
+                <h4>Min :</h4>
+                <input onChange={(event) => setFilterMinValue(event.target.value)}/>
+                <h4>Max : </h4>
+                <input onChange={(event) => setFilterMaxValue(event.target.value)}/>
+                <h4>Product description: </h4>
+            </form>
+            {(filter === "ProductPrice") ? <button onClick={() => setFilter("ProductID")}>Filter by id</button> : <button onClick={() => setFilter("ProductPrice")}>Filter by id</button>}
         </>
     );
 }

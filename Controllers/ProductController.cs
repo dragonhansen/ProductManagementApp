@@ -12,21 +12,35 @@ public class ProductController : ControllerBase
 
    Dictionary<int, string> SortingMap = new Dictionary<int, string>() { { 0, "ProductPrice" }, { 1, "ProductName" }, { 2, "ProductID" } };
 
-   [HttpGet("{sorting:int}/{pageNumber:int}")]
-   public JsonResult Get(int pageNumber, int sorting)
+   [HttpGet("{sorting:int}/{pageNumber:int}/{filter}/{min:int?}/{max:int?}")]
+   public JsonResult Get(int pageNumber, int sorting, string filter , int min, int max)
    {
       connection.Open();
-      return ReadData(connection, pageNumber, sorting);
+      return ReadData(connection, pageNumber, sorting, filter, min, max);
    }
 
-   private JsonResult ReadData(SqliteConnection conn, int pageNumber, int sorting)
+   private JsonResult ReadData(SqliteConnection conn, int pageNumber, int sorting, string filter, int min = -1, int max = -1)
    {
       int start = pageNumber * 10;
       SqliteDataReader sqliteDataReader;
       SqliteCommand sqliteCmd = conn.CreateCommand();
       string sortingOrder;
       SortingMap.TryGetValue(sorting, out sortingOrder);
-      sqliteCmd.CommandText = $"SELECT * FROM Product ORDER BY {sortingOrder} LIMIT 11 OFFSET {start}";
+      
+      sqliteCmd.CommandText = "SELECT * FROM Product ";
+
+      Console.WriteLine($"{filter}, {min} {max}");
+
+      if(min != -1 && max != -1) {
+         sqliteCmd.CommandText += $"WHERE {filter} BETWEEN {min} AND {max} ";
+      } else if (min != -1) {
+         sqliteCmd.CommandText += $"WHERE {filter} >= {min} ";
+      }
+      else if (max != -1) {
+         sqliteCmd.CommandText += $"WHERE {filter} <= {max} ";
+      }
+
+      sqliteCmd.CommandText += $"ORDER BY {sortingOrder} LIMIT 11 OFFSET {start}";
 
       sqliteDataReader = sqliteCmd.ExecuteReader();
       ProductModel[] products = new ProductModel[10];
