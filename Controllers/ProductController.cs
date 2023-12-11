@@ -26,8 +26,6 @@ public class ProductController : ControllerBase
       
       sqliteCmd.CommandText = "SELECT * FROM Product ";
 
-      Console.WriteLine($"{filter}, {min} {max}");
-
       if(min != -1 && max != -1) {
          sqliteCmd.CommandText += $"WHERE {filter} BETWEEN {min} AND {max} ";
       } else if (min != -1) {
