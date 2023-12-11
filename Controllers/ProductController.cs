@@ -12,17 +12,12 @@ public class ProductController : ControllerBase
    SqliteConnection connection = new SqliteConnection("Data Source=product_db.db");
 
    [HttpGet("{sortingOrder}/{pageNumber:int}/{filter}/{min:int}/{max:int}")]
-   public JsonResult Get(int pageNumber, string sortingOrder, string filter , int min, int max)
+   public IActionResult Get(int pageNumber, string sortingOrder, string filter , int min, int max)
    {
       connection.Open();
-      return ReadRelevantData(connection, pageNumber, sortingOrder, filter, min, max);
-   }
-
-   private JsonResult ReadRelevantData(SqliteConnection conn, int pageNumber, string sortingOrder, string filter, int min = -1, int max = -1)
-   {
       int start = pageNumber * 10;
       SqliteDataReader sqliteDataReader;
-      SqliteCommand sqliteCmd = conn.CreateCommand();
+      SqliteCommand sqliteCmd = connection.CreateCommand();
       
       sqliteCmd.CommandText = "SELECT * FROM Product ";
 
@@ -37,22 +32,28 @@ public class ProductController : ControllerBase
 
       sqliteCmd.CommandText += $"ORDER BY {sortingOrder} LIMIT 11 OFFSET {start}";
 
-      sqliteDataReader = sqliteCmd.ExecuteReader();
-      ProductModel[] products = new ProductModel[10];
-      int i = 0;
-      while (i < 10 && sqliteDataReader.Read())
-      {
-         int productID = sqliteDataReader.GetInt32(0);
-         string productName = sqliteDataReader.GetString(1);
-         string productDescription = sqliteDataReader.GetString(2);
-         int productPrice = sqliteDataReader.GetInt32(3);
-         ProductModel product = new ProductModel { ProductId = productID, ProductName = productName, ProductDescription = productDescription, ProductPrice = productPrice };
-         products[i] = product;
-         i++;
+      try {
+         sqliteDataReader = sqliteCmd.ExecuteReader();
+         ProductModel[] products = new ProductModel[10];
+         int i = 0;
+         while (i < 10 && sqliteDataReader.Read())
+         {
+            int productID = sqliteDataReader.GetInt32(0);
+            string productName = sqliteDataReader.GetString(1);
+            string productDescription = sqliteDataReader.GetString(2);
+            int productPrice = sqliteDataReader.GetInt32(3);
+            ProductModel product = new ProductModel { ProductId = productID, ProductName = productName, ProductDescription = productDescription, ProductPrice = productPrice };
+            products[i] = product;
+            i++;
+         }
+         bool hasMoreProductsToRead = sqliteDataReader.Read();
+         connection.Close();
+         return new JsonResult(new { products, hasMoreProductsToRead });
       }
-      bool hasMoreProductsToRead = sqliteDataReader.Read();
-      conn.Close();
-      return new JsonResult(new { products, hasMoreProductsToRead });
+      catch (SqliteException e) {
+         Console.WriteLine($"Error: could not read from database: {e.Message}, arborting...");
+         return StatusCode(500);
+      }
    }
 
    [HttpPost("add-product")]
