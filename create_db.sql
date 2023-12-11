@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS Item (
+DROP TABLE IF EXISTS Item;
+
+CREATE TABLE Item (
     ProductID INTEGER PRIMARY KEY,
     ProductName TEXT,
     ProductDescription TEXT,

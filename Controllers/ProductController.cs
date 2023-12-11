@@ -50,7 +50,7 @@ public class ProductController : ControllerBase
    public IActionResult ProcessFormData([FromBody] ProductModel productToAdd) {
       connection.Open();
       SqliteCommand sqliteCmd = connection.CreateCommand();
-      sqliteCmd.CommandText = $"INSERT INTO Item VALUES ({productToAdd.ProductId}, '{productToAdd.ProductName}', '{productToAdd.ProductDescription}', {productToAdd.ProductId})";
+      sqliteCmd.CommandText = $"INSERT INTO Item VALUES ({productToAdd.ProductId}, '{productToAdd.ProductName}', '{productToAdd.ProductDescription}', {productToAdd.ProductPrice})";
       try {
          sqliteCmd.ExecuteNonQuery();
       }
