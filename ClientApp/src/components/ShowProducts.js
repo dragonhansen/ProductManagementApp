@@ -11,6 +11,15 @@ function ShowProducts() {
     const [filter, setFilter] = useState("ProductPrice");
     const [filterMinValue, setFilterMinValue] = useState(-1);
     const [filterMaxValue, setFilterMaxValue] = useState(-1);
+
+    const handleFilterChange = (setFunction) => (event) => {
+        if (event.target.value === "") {
+            setFunction(-1);
+            return;
+        }
+        setFunction(event.target.value);
+    }
+
     useEffect(() => {
         fetch(`product/${sortingOrder}/${pageNumber}/${filter}/${filterMinValue}/${filterMaxValue}`)
             .then((result) => {
@@ -43,9 +52,9 @@ function ShowProducts() {
             <button onClick={() => setSortingOrder("ProductID")}>Id: 0-9</button>
             <form>
                 <h4>Min :</h4>
-                <input onChange={(event) => setFilterMinValue(event.target.value)}/>
+                <input onChange={handleFilterChange(setFilterMinValue)}/>
                 <h4>Max : </h4>
-                <input onChange={(event) => setFilterMaxValue(event.target.value)}/>
+                <input onChange={handleFilterChange(setFilterMaxValue)}/>
             </form>
             {(filter === "ProductPrice") ? <button onClick={() => setFilter("ProductID")}>Filter by id</button> : <button onClick={() => setFilter("ProductPrice")}>Filter by id</button>}
         </>
