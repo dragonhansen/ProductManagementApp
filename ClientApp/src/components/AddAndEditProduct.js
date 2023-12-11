@@ -1,15 +1,16 @@
 import React, { useState, useRef } from "react";
 
-function AddProduct() {
+function AddAndEditProduct() {
 
     const [formData, setFormData] = useState({});
     const [submitSuccessful, setSubmitSuccessful] = useState(true);
     const formRef = useRef(null);
+    const [submitTpye, setSubmitType] = useState("");
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch('product', {
+            const response = await fetch(`product/${submitTpye}`, {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
@@ -50,11 +51,13 @@ function AddProduct() {
                 <input name="productDescription" onChange={handleInputChange} required/>
                 <h4>Product price: </h4>
                 <input name="productPrice" onChange={handleInputChange} required/>
-                <button type="submit">Add product</button>
+                <button type="submit" onClick={() => setSubmitType("add-product")}>Add product</button>
+                <button type="submit" onClick={() => setSubmitType("edit-product")}>Edit product</button>
             </form> 
-            {submitSuccessful ? <></> : <div>Error: make sure to use a unique ID and correct data types for parameters!</div>}
+            {(!submitSuccessful && submitTpye=== "add-product") ? <div>Error: make sure to use a unique ID and correct data types for parameters!</div> : <></>}
+            {(!submitSuccessful && submitTpye === "edit-product") ? <div>Error: make sure to use an existing ID and correct data types for parameters!</div> : <></>}
         </>
     );
 }
 
-export default AddProduct;
+export default AddAndEditProduct;

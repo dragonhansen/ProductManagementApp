@@ -1,4 +1,4 @@
-import AddProduct from "./components/AddProduct";
+import AddAndEditProduct from "./components/AddAndEditProduct";
 import { Home } from "./components/Home";
 import ShowProducts from "./components/ShowProducts";
 
@@ -12,8 +12,8 @@ const AppRoutes = [
     element: <ShowProducts />
   },
   {
-    path: '/add-product',
-    element: <AddProduct />
+    path: '/add-edit-product',
+    element: <AddAndEditProduct />
   }
 ];
 

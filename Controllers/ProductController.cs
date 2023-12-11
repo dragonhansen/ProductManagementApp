@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 
@@ -14,10 +15,10 @@ public class ProductController : ControllerBase
    public JsonResult Get(int pageNumber, string sortingOrder, string filter , int min, int max)
    {
       connection.Open();
-      return ReadData(connection, pageNumber, sortingOrder, filter, min, max);
+      return ReadRelevantData(connection, pageNumber, sortingOrder, filter, min, max);
    }
 
-   private JsonResult ReadData(SqliteConnection conn, int pageNumber, string sortingOrder, string filter, int min = -1, int max = -1)
+   private JsonResult ReadRelevantData(SqliteConnection conn, int pageNumber, string sortingOrder, string filter, int min = -1, int max = -1)
    {
       int start = pageNumber * 10;
       SqliteDataReader sqliteDataReader;
@@ -56,8 +57,8 @@ public class ProductController : ControllerBase
       return new JsonResult(new { products, hasMoreProductsToRead });
    }
 
-   [HttpPost()]
-   public IActionResult ProcessFormData([FromBody] ProductModel productToAdd) {
+   [HttpPost("add-product")]
+   public IActionResult AddProduct([FromBody] ProductModel productToAdd) {
       connection.Open();
       SqliteCommand sqliteCmd = connection.CreateCommand();
       sqliteCmd.CommandText = $"INSERT INTO Product VALUES ({productToAdd.ProductId}, '{productToAdd.ProductName}', '{productToAdd.ProductDescription}', {productToAdd.ProductPrice})";
@@ -67,6 +68,28 @@ public class ProductController : ControllerBase
       }
       catch(SqliteException e) {
          Console.WriteLine($"Error: could not insert product due to {e.Message}, arborting...");
+         return Conflict();
+      }
+      finally {
+         connection.Close();
+      }
+   }
+
+   [HttpPost("edit-product")]
+   public IActionResult EditProduct([FromBody] ProductModel updatedProduct) {
+      connection.Open();
+      SqliteCommand sqliteCmd = connection.CreateCommand();
+      sqliteCmd.CommandText = $"UPDATE Product SET ProductName = '{updatedProduct.ProductName}', ProductDescription = '{updatedProduct.ProductDescription}', ProductPrice = {updatedProduct.ProductPrice} WHERE ProductID = {updatedProduct.ProductId}";
+      try {
+         int rowsInserted = sqliteCmd.ExecuteNonQuery();
+         if (rowsInserted == 0) {
+            return NotFound();
+         }
+         return Ok();
+
+      }
+      catch(SqliteException e) {
+         Console.WriteLine($"Error: could not update product due to {e.Message}, arborting...");
          return Conflict();
       }
       finally {
