@@ -37,7 +37,7 @@ function ShowProducts() {
       };
 
     return(
-        <main>
+        <>
             <h1>This page shows products</h1>
             {(products != null) ? products.map(product => 
                 (product != null) ? 
@@ -49,7 +49,7 @@ function ShowProducts() {
             <button onClick={() => setSorting(Sorting.Price)}>Price: 0-9</button>
             <button onClick={() => setSorting(Sorting.Alphabetically)}>Name: A-Z</button>
             <button onClick={() => setSorting(Sorting.Id)}>Id: 0-9</button>
-        </main>
+        </>
     );
 }
 

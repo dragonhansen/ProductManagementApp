@@ -47,7 +47,7 @@ public class ProductController : ControllerBase
    }
 
    [HttpPost()]
-   public IActionResult ProcessFormData([FromForm] ProductModel productToAdd) {
+   public IActionResult ProcessFormData([FromBody] ProductModel productToAdd) {
       connection.Open();
       SqliteCommand sqliteCmd = connection.CreateCommand();
       sqliteCmd.CommandText = $"INSERT INTO Item VALUES ({productToAdd.ProductId}, '{productToAdd.ProductName}', '{productToAdd.ProductDescription}', {productToAdd.ProductId})";
