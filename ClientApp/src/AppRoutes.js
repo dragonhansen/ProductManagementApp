@@ -1,3 +1,4 @@
+import AddProduct from "./components/AddProduct";
 import { Home } from "./components/Home";
 import ShowProducts from "./components/ShowProducts";
 
@@ -9,6 +10,10 @@ const AppRoutes = [
   {
     path: '/show-products',
     element: <ShowProducts />
+  },
+  {
+    path: '/add-product',
+    element: <AddProduct />
   }
 ];
 
