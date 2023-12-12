@@ -20,17 +20,21 @@ public class ProductController : ControllerBase
       SqliteCommand sqliteCmd = connection.CreateCommand();
       
       sqliteCmd.CommandText = "SELECT * FROM Product ";
+      sqliteCmd.Parameters.AddWithValue("@filter", filter);
+      sqliteCmd.Parameters.AddWithValue("@min", min);
+      sqliteCmd.Parameters.AddWithValue("@max", max);
 
       if(min != -1 && max != -1) {
-         sqliteCmd.CommandText += $"WHERE {filter} BETWEEN {min} AND {max} ";
+         sqliteCmd.CommandText += $"WHERE {filter} BETWEEN @min AND @max ";
       } else if (min != -1) {
-         sqliteCmd.CommandText += $"WHERE {filter} >= {min} ";
+         sqliteCmd.CommandText += $"WHERE {filter} >= @min ";
       }
       else if (max != -1) {
-         sqliteCmd.CommandText += $"WHERE {filter} <= {max} ";
+         sqliteCmd.CommandText += $"WHERE {filter} <= @max ";
       }
 
-      sqliteCmd.CommandText += $"ORDER BY {sortingOrder} LIMIT 11 OFFSET {start}";
+      sqliteCmd.Parameters.AddWithValue("@start", start);
+      sqliteCmd.CommandText += $"ORDER BY {sortingOrder} LIMIT 11 OFFSET @start";
 
       try {
          sqliteDataReader = sqliteCmd.ExecuteReader();
@@ -60,7 +64,11 @@ public class ProductController : ControllerBase
    public IActionResult AddProduct([FromBody] ProductModel productToAdd) {
       connection.Open();
       SqliteCommand sqliteCmd = connection.CreateCommand();
-      sqliteCmd.CommandText = $"INSERT INTO Product VALUES ({productToAdd.ProductId}, '{productToAdd.ProductName}', '{productToAdd.ProductDescription}', {productToAdd.ProductPrice})";
+      sqliteCmd.CommandText = "INSERT INTO Product VALUES (@ProductID, @ProductName, @ProductDescription, @ProductPrice)";
+      sqliteCmd.Parameters.AddWithValue("@ProductID", productToAdd.ProductId);
+      sqliteCmd.Parameters.AddWithValue("@ProductName", productToAdd.ProductName);
+      sqliteCmd.Parameters.AddWithValue("@ProductDescription", productToAdd.ProductDescription);
+      sqliteCmd.Parameters.AddWithValue("@ProductPrice", productToAdd.ProductPrice);
       try {
          sqliteCmd.ExecuteNonQuery();
          return Ok();
@@ -78,8 +86,12 @@ public class ProductController : ControllerBase
    public IActionResult EditProduct([FromBody] ProductModel updatedProduct) {
       connection.Open();
       SqliteCommand sqliteCmd = connection.CreateCommand();
-      sqliteCmd.CommandText = $"UPDATE Product SET ProductName = '{updatedProduct.ProductName}', ProductDescription = '{updatedProduct.ProductDescription}', ProductPrice = {updatedProduct.ProductPrice} WHERE ProductID = {updatedProduct.ProductId}";
-      try {
+      sqliteCmd.CommandText = "UPDATE Product SET ProductName = @ProductName, ProductDescription = @ProductDescription, ProductPrice = @ProductPrice WHERE ProductID = @ProductID";
+      sqliteCmd.Parameters.AddWithValue("@ProductName", updatedProduct.ProductName);
+      sqliteCmd.Parameters.AddWithValue("@ProductDescription", updatedProduct.ProductDescription);
+      sqliteCmd.Parameters.AddWithValue("@ProductPrice", updatedProduct.ProductPrice);
+      sqliteCmd.Parameters.AddWithValue("@ProductID", updatedProduct.ProductId);
+         try {
          int rowsInserted = sqliteCmd.ExecuteNonQuery();
          if (rowsInserted == 0) {
             return NotFound();
