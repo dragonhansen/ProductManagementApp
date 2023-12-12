@@ -6,17 +6,18 @@ function AddAndEditProduct() {
     const [submitSuccessful, setSubmitSuccessful] = useState(true);
     const formRef = useRef(null);
     const [submitTpye, setSubmitType] = useState("");
+    const [requestType, setRequestType] = useState("");
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
-        try {
-            const response = await fetch(`product/${submitTpye}`, {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
+        fetch(`product/${submitTpye}`, {
+            method: requestType,
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        })
+        .then((response) => {
             if (response.ok) {
                 formRef.current.reset();
                 setSubmitSuccessful(true);
@@ -24,9 +25,10 @@ function AddAndEditProduct() {
                 setSubmitSuccessful(false);
                 console.error('Error', response.status, response.statusText);
             }
-        } catch (error) {
+        })
+        .catch((error) => {
             console.error('Error:', error.message);
-        }
+        });
     }
 
     const handleInputChange = (event) => {
@@ -49,8 +51,8 @@ function AddAndEditProduct() {
                 <h4>Product price: </h4>
                 <input name="productPrice" onChange={handleInputChange} required/>
                 <div>
-                    <button type="submit" onClick={() => setSubmitType("add-product")}>Add product</button>
-                    <button type="submit" onClick={() => setSubmitType("edit-product")}>Edit product</button>
+                    <button type="submit" onClick={() => {setSubmitType("add-product"); setRequestType("POST")}}>Add product</button>
+                    <button type="submit" onClick={() => {setSubmitType("edit-product"); setRequestType("PUT")}}>Edit product</button>
                 </div>
             </form> 
             {(!submitSuccessful && submitTpye=== "add-product") ? <div>Error: make sure to use a unique ID and correct data types for parameters!</div> : <></>}

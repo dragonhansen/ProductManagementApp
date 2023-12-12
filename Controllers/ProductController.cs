@@ -51,12 +51,14 @@ public class ProductController : ControllerBase
             i++;
          }
          bool hasMoreProductsToRead = sqliteDataReader.Read();
-         connection.Close();
          return new JsonResult(new { products, hasMoreProductsToRead });
       }
       catch (SqliteException e) {
          Console.WriteLine($"Error: could not read from database: {e.Message}, arborting...");
          return StatusCode(500);
+      }
+      finally {
+         connection.Close();
       }
    }
 
@@ -82,7 +84,7 @@ public class ProductController : ControllerBase
       }
    }
 
-   [HttpPost("edit-product")]
+   [HttpPut("edit-product")]
    public IActionResult EditProduct([FromBody] ProductModel updatedProduct) {
       connection.Open();
       SqliteCommand sqliteCmd = connection.CreateCommand();
